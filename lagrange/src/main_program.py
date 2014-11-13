@@ -8,6 +8,7 @@ import tabulate
 from numpy import pi
 from math import cos, sin, factorial
 from constants import part_amount, dif_h, small_step
+from numpy.matlib import rand
 
  
 
@@ -43,7 +44,6 @@ def nth_dif_of_cos(n, arg_coef):
     else:
         neg_one_factor = 1
         trig = lambda x: sin(x)
-     
     return (lambda x,n=n, neg_one=neg_one_factor, arg_coef=arg_coef, trig=trig: arg_coef**n * neg_one * trig(arg_coef*x))
     
 def mega_f(x):
@@ -89,7 +89,8 @@ def print_table(segment, h, function, l, A):
     table_head = ["x_k", "function(x_k)", "L_5(x_k, function)", "|function(x_k) - L_5(x_k, function)|", "A(x_k)"]
     rows = []
     for point in points:
-        row = [point, function(point), eval_Lagrange(l, point), abs(function(point) - eval_Lagrange(l, point)), A(point)]
+        t = eval_Lagrange(l, point)
+        row = [point, function(point), t, abs(function(point) - t), A(point)]
         rows.append(row)
     print tabulate.tabulate(rows, table_head, "grid")
 
@@ -107,12 +108,12 @@ def print_table_at_segment_for_g_and_fs(x_segment, xs):
     # our interpolation degree 
     n = len(omega)
     # prepare lambda functions for absolute of (n+1 derivatives) of f and g
-    abs_nth_der_f = lambda x, f1=nth_dif_of_cos(n + 1, float(1)/3), f2=nth_dif_of_sin(n + 1, float(1)/2): abs(f1(x) - f2(x))
-    abs_nth_der_g = lambda x, g1=nth_dif_of_cos(n + 1, float(1)/5) : abs(g1(x))
+    abs_nth_der_f = lambda x, f1=nth_dif_of_cos(n + 1, float(1)/3), f2=nth_dif_of_sin(n + 1, float(1)/2):    abs(f1(x) - f2(x))
+    abs_nth_der_g = lambda x, g1=nth_dif_of_cos(n + 1, float(5)) :     abs(g1(x))
     #calculate their max values
     max_f_der_value = stupid_max(abs_nth_der_f, x_segment)
     max_g_der_value = stupid_max(abs_nth_der_g, x_segment)
-    print max_f_der_value, " ", max_g_der_value
+    print "Max values: |f`````|", max_f_der_value, " ; |g`````|", max_g_der_value
     #construct As
     A_f = lambda x : abs(numpy.prod(map(lambda factor : factor(x), omega))) * max_f_der_value / factorial(n + 1)
     A_g = lambda x : abs(numpy.prod(map(lambda factor : factor(x), omega))) * max_g_der_value / factorial(n + 1)
