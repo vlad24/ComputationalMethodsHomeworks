@@ -10,7 +10,6 @@ from math import cos, sin, factorial
 from constants import part_amount, dif_h, small_step
 from numpy.matlib import rand
 
- 
 
 def nth_dif_of_sin(n, arg_coef):
     #0: sin; 1 : cos; 2 : -sin 3: -cos
@@ -160,10 +159,11 @@ if __name__ == '__main__':
     print "***Experimenting with different segment lengths and number of nodes there"
     segment = [-pi/2, pi/2]
     xs = [-pi/3, -pi/5, -pi/9, pi/7, pi/3]
-    #experiment_with_xs_at_segment(segment, xs)
-    double_xs = xs + map(lambda l, shift = numpy.max(xs): l + shift,xs)
-    print double_xs
-    #experiment_with_xs_at_segment(segment, xs)
+    experiment_with_xs_at_segment(segment, xs)
+    double_xs = sorted(xs + map(lambda l, shift = numpy.max(xs): l + shift,xs))
+    print len(xs)
+    print len(double_xs)
+    experiment_with_xs_at_segment(segment, xs)
     
     
     
