@@ -9,7 +9,6 @@ from numpy import pi
 from math import cos, sin, factorial
 from constants import part_amount, dif_h, small_step
 from numpy.matlib import rand
-from dff.modules.viewer.hexedit.goto import goto
 
  
 
@@ -156,13 +155,15 @@ def experiment_with_xs_at_segment(segment, xs):
     
     
     
-    
 if __name__ == '__main__':
     print "*******Main started"
     print "***Experimenting with different segment lengths and number of nodes there"
     segment = [-pi/2, pi/2]
     xs = [-pi/3, -pi/5, -pi/9, pi/7, pi/3]
-    experiment_with_xs_at_segment(segment, xs)
+    #experiment_with_xs_at_segment(segment, xs)
+    double_xs = xs + map(lambda l, shift = numpy.max(xs): l + shift,xs)
+    print double_xs
+    #experiment_with_xs_at_segment(segment, xs)
     
     
     
