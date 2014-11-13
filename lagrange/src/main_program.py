@@ -5,10 +5,10 @@ Created on 11.11.2014
 '''
 import numpy
 import tabulate
+import scipy.interpolate as sci
 from numpy import pi
 from math import cos, sin, factorial
-from constants import part_amount, dif_h, small_step
-from numpy.matlib import rand
+from real_constants import part_amount, small_step, float_difference
 
 
 def nth_dif_of_sin(n, arg_coef):
@@ -100,11 +100,17 @@ def print_table_at_segment_for_g_and_fs(x_segment, xs):
     gs = map(lambda x: mega_g(x), xs[:])
     #using the x_i = x_i to make python to close over the value of x_i and not, the name that is "lazy watched" once
     omega = [(lambda x, x_i=x_i : x - x_i) for x_i in xs]
+    
+    
     f_lagrange = construct_Lagrange_polynomial(xs, fs, omega)
     g_lagrange = construct_Lagrange_polynomial(xs, gs, omega)
-    print "Lagrange       |        Original"
+    p = sci.lagrange(xs, fs)
+    
+    #checking the results
     for i in range(len(xs)):
-        print eval_Lagrange(g_lagrange, xs[i]), " ", gs[i] 
+        assert abs(eval_Lagrange(g_lagrange, xs[i]) - gs[i]) < float_difference
+        assert p(xs[i]) - eval_Lagrange(f_lagrange, xs[i]) < float_difference  
+        
     # our interpolation degree 
     n = len(omega)
     # prepare lambda functions for absolute of (n+1 derivatives) of f and g
@@ -112,8 +118,10 @@ def print_table_at_segment_for_g_and_fs(x_segment, xs):
     abs_nth_der_g = lambda x,n=n, g1=nth_dif_of_cos(n + 1, float(5)) :     abs(g1(x))
     #calculate their max values
     max_f_der_value = stupid_max(abs_nth_der_f, x_segment)
+    assert max_f_der_value >= 0
     max_g_der_value = stupid_max(abs_nth_der_g, x_segment)
-    print abs_nth_der_f(0)
+    assert max_g_der_value
+    print abs_nth_der_f(0) >= 0
     print "Max values: |f`|", max_f_der_value, " ; |g`",n,"|", max_g_der_value
     #construct As
     A_f = lambda x : (abs(numpy.prod(map(lambda factor : factor(x), omega))) * max_f_der_value) / float(factorial(n + 1))
