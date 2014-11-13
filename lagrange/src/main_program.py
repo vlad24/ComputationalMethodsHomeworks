@@ -9,6 +9,7 @@ from numpy import pi
 from math import cos, sin, factorial
 from constants import part_amount, dif_h, small_step
 from numpy.matlib import rand
+from dff.modules.viewer.hexedit.goto import goto
 
  
 
@@ -55,6 +56,7 @@ def mega_g(x):
 def stupid_max(f, x_segment):
     max_val = -float("infinity")
     e = 0
+    print "f(0) = ", f(0), "x[le] = ", x_segment[0], "x[ri] = ", x_segment[-1]
     points = numpy.arange(x_segment[0], x_segment[-1], small_step)
     for p in points:
         tmp = f(p)
@@ -108,17 +110,19 @@ def print_table_at_segment_for_g_and_fs(x_segment, xs):
     # our interpolation degree 
     n = len(omega)
     # prepare lambda functions for absolute of (n+1 derivatives) of f and g
-    abs_nth_der_f = lambda x, f1=nth_dif_of_cos(n + 1, float(1)/3), f2=nth_dif_of_sin(n + 1, float(1)/2):    abs(f1(x) - f2(x))
-    abs_nth_der_g = lambda x, g1=nth_dif_of_cos(n + 1, float(5)) :     abs(g1(x))
+    abs_nth_der_f = lambda x, n=n, der1=nth_dif_of_cos(n + 1, float(1)/3), der2=nth_dif_of_sin(n + 1, float(1)/2):    abs(der1(x) - der2(x))
+    abs_nth_der_g = lambda x,n=n, g1=nth_dif_of_cos(n + 1, float(5)) :     abs(g1(x))
     #calculate their max values
     max_f_der_value = stupid_max(abs_nth_der_f, x_segment)
     max_g_der_value = stupid_max(abs_nth_der_g, x_segment)
-    print "Max values: |f`````|", max_f_der_value, " ; |g`````|", max_g_der_value
+    print abs_nth_der_f(0)
+    print "Max values: |f`|", max_f_der_value, " ; |g`",n,"|", max_g_der_value
     #construct As
-    A_f = lambda x : abs(numpy.prod(map(lambda factor : factor(x), omega))) * max_f_der_value / factorial(n + 1)
-    A_g = lambda x : abs(numpy.prod(map(lambda factor : factor(x), omega))) * max_g_der_value / factorial(n + 1)
+    A_f = lambda x : (abs(numpy.prod(map(lambda factor : factor(x), omega))) * max_f_der_value) / float(factorial(n + 1))
+    A_g = lambda x : (abs(numpy.prod(map(lambda factor : factor(x), omega))) * max_g_der_value) / float(factorial(n + 1))
     # prepare yourself for iterating
-    h = float(xs[-1] - xs[0]) / float(part_amount)
+    h = float(x_segment[-1] - x_segment[0]) / float(part_amount)
+    print h
     #Print the target tables
     header = "-" * 11 + "Table for F at" + str(x_segment) + "-" *11
     print header
@@ -132,12 +136,36 @@ def print_table_at_segment_for_g_and_fs(x_segment, xs):
     print_table(x_segment, h, mega_g, g_lagrange, A_g)
     print "-" * len(header)
     
+    
+def experiment_with_xs_at_segment(segment, xs):
+    print "1.Original ", xs
+    print_table_at_segment_for_g_and_fs(segment, xs)
+    
+    xs_lefter = map(lambda x : x / float(2), xs[:len(xs)/2])
+    print "2.Lefter ", xs_lefter
+    print_table_at_segment_for_g_and_fs(segment, xs_lefter)
+    
+    xs_righter = map(lambda x : 1.1 * x, xs[len(xs)/2 + 1:])
+    print "3.Righter. ", xs_righter
+    print_table_at_segment_for_g_and_fs(segment, xs_righter)
+    
+    xs_centered = map(lambda x : x / float(2), xs[len(xs)/2 - 2: len(xs)/2 + 2])
+    print "4.Centered. ", xs_centered
+    print_table_at_segment_for_g_and_fs(segment, xs_centered)
+    
+    
+    
+    
+    
 if __name__ == '__main__':
     print "*******Main started"
     print "***Experimenting with different segment lengths and number of nodes there"
     segment = [-pi/2, pi/2]
     xs = [-pi/3, -pi/5, -pi/9, pi/7, pi/3]
-    print_table_at_segment_for_g_and_fs(segment, xs)
+    experiment_with_xs_at_segment(segment, xs)
     
-     
-   
+    
+    
+    
+    
+    
