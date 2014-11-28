@@ -4,7 +4,6 @@ Created on 11.11.2014
 @author: Vladislav
 '''
 import numpy
-import matplotlib.pyplot as plt
 import tabulate
 import scipy.interpolate as sci
 from numpy import pi
@@ -89,7 +88,6 @@ def print_table(segment, h, function, l, A):
     for point in points:
         t = eval_Lagrange(l, point)
         a = A(point)
-        print a
         row = [point, function(point), t, abs(function(point) - t), max(abs(function(point) - t), a) + r.uniform(0.01, 0.03)]
         rows.append(row)
     print tabulate.tabulate(rows, table_head, "simple")
@@ -154,11 +152,12 @@ def experiment_with_xs_at_segment(segment, xs):
     r = xs[len(xs)/2 + 1]
     l = xs[0]
     xs_lefter = numpy.arange(l, r, (r - l)/ float(len(xs)))
-    #xs_lefter = map(lambda x : x / float(2), xs[:len(xs)/2 + 1])
     print "2.Lefter ", xs_lefter
     print_table_at_segment_for_g_and_fs(segment, xs_lefter)
     
-    xs_righter = map(lambda x : 1.1 * x, xs[len(xs)/2 + 1:])
+    l = xs[len(xs)/2 + 1]
+    r = xs[-1]
+    xs_righter = numpy.arange(l, r, (r - l)/ float(len(xs)))
     print "3.Righter. ", xs_righter
     print_table_at_segment_for_g_and_fs(segment, xs_righter)
     

@@ -42,10 +42,14 @@ def integral(formula, f, a, b, n):
             accumulator += f(a + j * h)
         return h * accumulator
     elif formula == "simp":
-        accumulator = (f(a) + f(b)) / 2 + f(a + h/2) * 2
-        for j in xrange(1, n):
-            accumulator += 2 * f(a + ((2*j + 1) / 2) * h) + f(a + j * h)
-        return (h / 3) * accumulator
+        zero_part = (f(a) + f(b))
+        first_part = 0.0
+        for k in range(1, n):
+            first_part += f(a + k * h)
+            second_part = 0.0
+            for k in range(1, n + 1):
+                second_part += f(a + float(2*k - 1)/2 * h)
+        return float(h)/6 * (zero_part + 2 * first_part + 4 * second_part)
     
 def remainder(formula, f, a, b, n, der2_f=None, der4_f=None):
     if formula == "rect" and der2_f is not None:
@@ -62,11 +66,12 @@ def remainder(formula, f, a, b, n, der2_f=None, der4_f=None):
         return abs(m1 * m2)
     
 def runge(k, I_2n, I_n):
-    return float(((1 << k) * I_2n - I_n)) / ((1 << (k - 1)) - 1) 
+    return float(((1 << k) * I_2n - I_n)) / ((1 << (k)) - 1) 
 
 if __name__ == '__main__':
     x = Symbol('x')
     f_expression = 1 / (0.3 + sinh(x))
+    print f_expression
     der2_f_expression = f_expression.diff(x, 2) 
     der4_f_expression = f_expression.diff(x, 4)
     f = lambdify(x, f_expression)
@@ -84,10 +89,10 @@ if __name__ == '__main__':
         I_runge = runge(formula_ks[formula], values[formula][16]["value"], values[formula][8]["value"])
         values[formula]["runge"] = I_runge
     #print values
-    
     for formula in values.iterkeys():
         print "---", formula
-        print " "*8, "runge precisicion =", values[formula]["runge"]
+        print " "*8, "runge =", values[formula]["runge"]
+        print " "*8, "|runge - value| = ", abs(values[formula]["runge"] - values[formula][8]["value"])
         for n in values[formula].iterkeys():
             if type(n) is int:
                 print " "*16, "n =", n
