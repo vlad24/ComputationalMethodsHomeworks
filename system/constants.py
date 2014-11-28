@@ -1,5 +1,5 @@
 print ("___Constants loaded")
 
-epsilon = 1/50
-sigma = 1/10
-gamma = 1/10000
+epsilon = float(1)/50
+sigma = float(1)/10
+gamma =float(1)/10000
