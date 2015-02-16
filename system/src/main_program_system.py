@@ -8,6 +8,6 @@ if __name__ == '__main__':
             j += 1
             k = -0.10 - 0.05 * i_k
             #-0.10, - 0.15, .. -0.35
-            print("###",j,"### A and K have been chosen : ", a, " ", k)
+            print "###",j,"### A and K have been chosen : ", a, " ", k
             squares = [[0,2,0,2],[-4,0,-4,0]]
             system_solver.solve_system(a, k, squares)
