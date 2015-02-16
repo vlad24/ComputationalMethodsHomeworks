@@ -58,7 +58,7 @@ if __name__ == '__main__':
     dirty_matrix = np.copy(matrix)         
     gaussiate_forward(dirty_matrix) 
     solution = gaussiate_backwards(dirty_matrix)
-    print "Solution:"
+    print "Solution vector:"
     print solution
     print "Difference:", np.sum((np.absolute((np.dot(matrix[:,:-1], solution) - np.reshape(matrix[:,-1], (-1,1))))))
 
